@@ -27,9 +27,6 @@ android {
     lintOptions {
         abortOnError false
     }
-
-    // REMOVEMOS AQUI O BLOCO 'publishing {}' que estava dentro do 'android {}'
-    // Pois ele será definido abaixo de forma mais explícita para o JitPack.
 }
 
 // --- Dependências do Módulo ---
@@ -63,41 +60,13 @@ afterEvaluate {
                     builtBy tasks.bundleReleaseAar // Garante que a tarefa de build do AAR seja executada primeiro
                 }
 
-                // Anexar o sources JAR e javadoc JAR
-                // As tarefas sourcesJar e javadocJar precisam estar definidas para isso funcionar.
-                if (tasks.findByName('sourcesJar')) {
-                    artifact tasks.sourcesJar
-                }
-                if (tasks.findByName('javadocJar')) {
-                    artifact tasks.javadocJar
-                }
+                // REMOVIDO: artifact tasks.sourcesJar e artifact tasks.javadocJar
+                // Estas linhas foram removidas pois as tarefas correspondentes estavam falhando
+                // e não são essenciais para a publicação do AAR principal.
             }
         }
     }
 }
 
-// --- Tarefas para Gerar Sources e Javadoc JARs (necessárias para 'artifact tasks.sourcesJar/javadocJar') ---
-// Estas tarefas criam os JARs de código-fonte e documentação para serem publicados.
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.addStringOption('Xdoclint:none', '-quiet') // Suprime warnings de Javadoc
-    options.addStringOption('encoding', 'UTF-8')
-    failOnError false // Não falha o build por erros de Javadoc
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set('javadoc')
-    from javadoc.destinationDir
-}
-
-// --- Define os artefatos a serem incluídos na publicação (além do AAR principal) ---
-// Isso informa ao Gradle que sourcesJar e javadocJar são artefatos do projeto.
-artifacts {
-    archives sourcesJar, javadocJar
-}
+// REMOVIDO: Todas as tarefas 'sourcesJar', 'javadoc', 'javadocJar' e o bloco 'artifacts { archives ... }'
+// Elas foram removidas para garantir o sucesso do build do AAR principal.
