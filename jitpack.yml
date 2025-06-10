@@ -1,10 +1,17 @@
 # jitpack.yml
 # Informa ao JitPack para construir apenas o módulo 'chat-message-view'
 
+# Força o uso do Java 17, que é compatível com o Android Gradle Plugin 8.3.0
 jdk:
-  - openjdk11
+  - openjdk17
 
-# Definir o módulo principal para o JitPack
-# Isso garante que ele construa a biblioteca e não o exemplo.
+# Define onde o JitPack deve procurar os artefatos (arquivos .aar)
+# para publicar sua biblioteca.
 artifacts:
+  # Caminho padrão onde o Android Gradle Plugin gera o arquivo .aar de release.
   - chat-message-view/build/outputs/aar/*.aar
+
+# REMOVIDO:
+# - A seção 'install' e 'before_install' que pode interferir no comando padrão do JitPack.
+# - O JitPack normalmente chama 'assembleRelease' e depois procura os artefatos especificados em 'artifacts'.
+# - A tarefa 'publishToMavenLocal' é mais para uso local e pode causar 'UP-TO-DATE' no ambiente JitPack.
