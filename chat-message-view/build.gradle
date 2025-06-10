@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish' // <-- ADICIONE ESTA LINHA
+apply plugin: 'maven-publish' // Essencial para publicação
 
 // REMOVA OU COMENTE TODO ESSE BLOCO 'ext'
 /*
@@ -9,7 +9,7 @@ ext {
 
     publishedGroupId = 'me.himanshusoni.chatmessageview'
     libraryName = 'chat-message-view'
-    artifact = 'chat-message-view'
+    artifactId = 'chat-message-view'
 
     libraryDescription = 'Android library to create chat message view easily'
 
@@ -30,16 +30,16 @@ ext {
 
 android {
     // Atualize para uma API moderna.
-    compileSdkVersion 34 // <-- ATUALIZE AQUI!
-    // buildToolsVersion "25.0.0" // <-- REMOVA OU COMENTE ESTA LINHA!
+    compileSdkVersion 34 
+    // buildToolsVersion "25.0.0" // Remova ou comente esta linha
     // resourcePrefix "cmv_" // Mantenha se quiser
 
-    // ADICIONE ESTA LINHA AQUI!
-    namespace 'me.himanshusoni.chatmessageview' // <-- ADICIONE ESTA LINHA!
+    // Adicione esta linha:
+    namespace 'me.himanshusoni.chatmessageview'
 
     defaultConfig {
         minSdkVersion 15 // Pode manter 15 ou aumentar para 21 ou 23 se quiser
-        targetSdkVersion 34 // <-- ATUALIZE AQUI!
+        targetSdkVersion 34 // Atualize aqui!
         versionCode 7
         versionName "1.0.7"
     }
@@ -51,9 +51,9 @@ android {
     }
     // Se houver um bloco 'lintOptions', você pode querer desabilitar o abortOnError para
     // evitar falhas de build devido a warnings em código antigo.
-    // lintOptions {
-    //     abortOnError false
-    // }
+    lintOptions {
+        abortOnError false // Adicionado para evitar falhas de build por warnings
+    }
 }
 
 // REMOVA OU COMENTE ESTAS DUAS LINHAS!
@@ -61,71 +61,50 @@ android {
 // apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/bintray.gradle'
 
 dependencies {
-    // Mude de 'compile fileTree' para 'implementation fileTree'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Mude de 'compile' para 'implementation'
     // Se você não for usar AndroidX, certifique-se de que a versão da Support Library é 28.0.0
-    implementation 'com.android.support:support-annotations:28.0.0' // Era 25.1.1, atualize se não usa AndroidX
-    implementation 'com.android.support:support-v4:28.0.0'       // Era 25.1.1, atualize se não usa AndroidX
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
 }
 
-// chat-message-view/build.gradle (NO FINAL DO ARQUIVO)
-afterEvaluate {
-    // Obtenha o componente Android Library. Para AGP 7.x+, ele é chamado 'release' por padrão.
-    def androidReleaseComponent = components.findByName('release')
+// NOVO BLOCO DE PUBLICAÇÃO (Substitui o 'afterEvaluate' e anexa o AAR diretamente)
+publishing {
+    publications {
+        // Nome da publicação (pode ser 'maven', 'release', etc.)
+        release(MavenPublication) {
+            groupId = 'com.github.valdomiro976' // Seu nome de usuário do GitHub
+            artifactId = 'chat-message-view'   // Nome do seu módulo da biblioteca
+            version = '3.0.11' // Use a versão da tag que você vai criar AGORA (ex: v3.0.9)
 
-    // Verifique se o componente foi encontrado
-    if (androidReleaseComponent == null) {
-        // Se 'release' não for encontrado, tente 'debug' ou outro nome de variante,
-        // ou logue um aviso para depuração.
-        println "WARNING: Could not find 'release' component. Attempting to use 'java' component for publication if available."
-        androidReleaseComponent = components.findByName('java')
-    }
-
-    // Se nenhum componente adequado for encontrado, logue e evite a falha.
-    if (androidReleaseComponent == null) {
-        println "ERROR: Could not find any suitable component for publication. Please check your Android Gradle Plugin configuration."
-        return // Saia do bloco afterEvaluate para evitar o erro.
-    }
-
-    publishing {
-        publications {
-            release(MavenPublication) {
-                // Use o componente encontrado
-                from androidReleaseComponent
-
-                groupId = 'com.github.valdomiro976'
-                artifactId = 'chat-message-view'
-                version = '3.0.9' // Use a versão da tag que você vai criar (ex: v3.0.9)
-
-                // Garante que sources e javadoc sejam anexados
-                artifact sourcesJar
-                artifact javadocJar
+            // Anexa diretamente o arquivo AAR gerado
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar") {
+                builtBy tasks.bundleReleaseAar // Garante que o AAR seja construído antes
             }
         }
     }
 }
 
-// As tarefas sourcesJar, javadoc e javadocJar permanecem as mesmas
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-}
+// REMOVA TODAS ESTAS TAREFAS DE JAVADOC E SOURCES JAR (ELAS ESTAVAM CAUSANDO ERROS), E O BLOCO ARTIFACTS QUE AS REFERENCIA
+// task sourcesJar(type: Jar) {
+//     archiveClassifier.set('sources')
+//     from android.sourceSets.main.java.srcDirs
+// }
 
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addStringOption('encoding', 'UTF-8')
-    failOnError false
-}
+// task javadoc(type: Javadoc) {
+//     source = android.sourceSets.main.java.srcDirs
+//     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//     options.addStringOption('Xdoclint:none', '-quiet')
+//     options.addStringOption('encoding', 'UTF-8')
+//     failOnError false
+// }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set('javadoc')
-    from javadoc.destinationDir
-}
+// task javadocJar(type: Jar, dependsOn: javadoc) {
+//     archiveClassifier.set('javadoc')
+//     from javadoc.destinationDir
+// }
 
-artifacts {
-    archives sourcesJar, javadocJar
-}
+// artifacts {
+//     archives sourcesJar, javadocJar
+// }
