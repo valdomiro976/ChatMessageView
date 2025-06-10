@@ -1,0 +1,10 @@
+# jitpack.yml
+# Informa ao JitPack para construir apenas o módulo 'chat-message-view'
+
+jdk:
+  - openjdk11
+
+# Definir o módulo principal para o JitPack
+# Isso garante que ele construa a biblioteca e não o exemplo.
+artifacts:
+  - chat-message-view/build/outputs/aar/*.aar
