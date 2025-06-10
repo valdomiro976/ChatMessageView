@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish' // Essencial para publicação com o AGP moderno
+apply plugin: 'maven-publish' // Essencial para publicação
 
 // --- Configurações Android ---
 android {
     // API de compilação para Android 14
     compileSdkVersion 34
-    // buildToolsVersion "25.0.0" // Esta linha é antiga, pode ser removida/comentada
 
     // Namespace do seu módulo (obrigatório para AGP 7.0+ e 8.0+)
     namespace 'me.himanshusoni.chatmessageview'
@@ -29,16 +28,8 @@ android {
         abortOnError false
     }
 
-    // --- Configuração de Publicação Android (Forma moderna do AGP) ---
-    publishing {
-        // Publica a variante 'release' da sua biblioteca
-        singleVariant('release') {
-            // Inclui o código-fonte (sources JAR)
-            withSourcesJar()
-            // Inclui a documentação Javadoc (javadoc JAR)
-            withJavadocJar()
-        }
-    }
+    // REMOVEMOS AQUI O BLOCO 'publishing {}' que estava dentro do 'android {}'
+    // Pois ele será definido abaixo de forma mais explícita para o JitPack.
 }
 
 // --- Dependências do Módulo ---
@@ -51,8 +42,62 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
 }
 
-// --- Comentários Importantes Removidos/Ignorados ---
-// O bloco 'ext' original, as linhas 'apply from' e as tarefas 'sourcesJar',
-// 'javadoc' e 'javadocJar' personalizadas foram removidas/ignoradas
-// pois o plugin 'maven-publish' em conjunto com o bloco 'android.publishing'
-// as substitui de forma mais eficiente e compatível.
+// --- Configuração de Publicação com 'maven-publish' ---
+// Este bloco deve estar FORA do bloco 'android {}'
+// Ele é executado após a avaliação do projeto, garantindo que o AAR seja gerado.
+afterEvaluate {
+    // Define o groupId e artifactId que o JitPack usará para sua biblioteca
+    group = 'com.github.valdomiro976' // Seu nome de usuário do GitHub
+    // project.version será automaticamente a tag do JitPack
+
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = project.group
+                artifactId = 'chat-message-view' // Nome do seu módulo da biblioteca
+                version = project.version // A versão será definida pela tag do JitPack
+
+                // ANEXA DIRETAMENTE O ARQUIVO AAR GERADO
+                // Esta é a forma mais robusta de obter o arquivo AAR de saída para publicação.
+                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar") {
+                    builtBy tasks.bundleReleaseAar // Garante que a tarefa de build do AAR seja executada primeiro
+                }
+
+                // Anexar o sources JAR e javadoc JAR
+                // As tarefas sourcesJar e javadocJar precisam estar definidas para isso funcionar.
+                if (tasks.findByName('sourcesJar')) {
+                    artifact tasks.sourcesJar
+                }
+                if (tasks.findByName('javadocJar')) {
+                    artifact tasks.javadocJar
+                }
+            }
+        }
+    }
+}
+
+// --- Tarefas para Gerar Sources e Javadoc JARs (necessárias para 'artifact tasks.sourcesJar/javadocJar') ---
+// Estas tarefas criam os JARs de código-fonte e documentação para serem publicados.
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.addStringOption('Xdoclint:none', '-quiet') // Suprime warnings de Javadoc
+    options.addStringOption('encoding', 'UTF-8')
+    failOnError false // Não falha o build por erros de Javadoc
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+// --- Define os artefatos a serem incluídos na publicação (além do AAR principal) ---
+// Isso informa ao Gradle que sourcesJar e javadocJar são artefatos do projeto.
+artifacts {
+    archives sourcesJar, javadocJar
+}
