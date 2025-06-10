@@ -80,7 +80,7 @@ afterEvaluate {
 
                 groupId = 'com.github.valdomiro976'
                 artifactId = 'chat-message-view'
-                version = '3.0.4' // Mantenha a versão da tag que você vai criar (ex: v3.0.5)
+                version = '3.0.5' // Mantenha a versão da tag que você vai criar (ex: v3.0.5)
 
                 // ADICIONE ESTAS DUAS LINHAS:
                 artifact sourcesJar // Adiciona o JAR de código-fonte
