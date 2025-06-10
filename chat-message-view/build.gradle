@@ -75,10 +75,10 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
+                from components.android // <-- CORREÇÃO AQUI!
                 groupId = 'com.github.valdomiro976'
                 artifactId = 'chat-message-view'
-                version = '3.0.3' // Use a versão da tag que você vai criar AGORA
+                version = '3.0.4' // Use a versão da tag que você vai criar AGORA
             }
         }
     }
