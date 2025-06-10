@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+// REMOVA OU COMENTE TODO ESSE BLOCO 'ext'
+/*
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'chat-message-view'
@@ -23,15 +25,17 @@ ext {
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
     allLicenses = ["Apache-2.0"]
 }
+*/
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
-//    resourcePrefix "cmv_"
+    // Atualize para uma API moderna.
+    compileSdkVersion 34 // <-- ATUALIZE AQUI!
+    // buildToolsVersion "25.0.0" // <-- REMOVA OU COMENTE ESTA LINHA!
+    // resourcePrefix "cmv_" // Mantenha se quiser
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 25
+        minSdkVersion 15 // Pode manter 15 ou aumentar para 21 ou 23 se quiser
+        targetSdkVersion 34 // <-- ATUALIZE AQUI!
         versionCode 7
         versionName "1.0.7"
     }
@@ -41,13 +45,31 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // Se houver um bloco 'lintOptions', você pode querer desabilitar o abortOnError para
+    // evitar falhas de build devido a warnings em código antigo.
+    // lintOptions {
+    //     abortOnError false
+    // }
 }
 
-apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/install.gradle'
-apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/bintray.gradle'
+// REMOVA OU COMENTE ESTAS DUAS LINHAS!
+// apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/install.gradle'
+// apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/bintray.gradle'
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-annotations:25.1.1'
-    compile 'com.android.support:support-v4:25.1.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // Estas dependências da Support Library são MUITO ANTIGAS.
+    // Se seu projeto principal usa AndroidX, você PRECISA migrar esta biblioteca para AndroidX.
+    // Se seu projeto principal NÃO usa AndroidX, você pode tentar atualizar para a última Support Library
+    // ANTES do AndroidX (versão 28.0.0).
+
+    // Opção 1: Migrar a biblioteca para AndroidX (RECOMENDADO para projetos novos)
+    // Você precisaria fazer mais mudanças no código-fonte Java/Kotlin da biblioteca.
+    // implementation 'androidx.annotation:annotation:1.X.X'
+    // implementation 'androidx.legacy:legacy-support-v4:1.X.X'
+
+    // Opção 2: Usar a última Support Library antes do AndroidX (se seu projeto principal não usa AndroidX)
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    // Mude de 'compile' para 'implementation'
 }
