@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish' // <-- ADICIONE ESTA LINHA
 
 // REMOVA OU COMENTE TODO ESSE BLOCO 'ext'
 /*
@@ -67,4 +68,18 @@ dependencies {
     // Se você não for usar AndroidX, certifique-se de que a versão da Support Library é 28.0.0
     implementation 'com.android.support:support-annotations:28.0.0' // Era 25.1.1, atualize se não usa AndroidX
     implementation 'com.android.support:support-v4:28.0.0'       // Era 25.1.1, atualize se não usa AndroidX
+}
+
+// Este bloco deve ser adicionado no FINAL do arquivo
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.valdomiro976'
+                artifactId = 'chat-message-view'
+                version = '3.0.3' // Use a versão da tag que você vai criar AGORA
+            }
+        }
+    }
 }
