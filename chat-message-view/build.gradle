@@ -33,6 +33,9 @@ android {
     // buildToolsVersion "25.0.0" // <-- REMOVA OU COMENTE ESTA LINHA!
     // resourcePrefix "cmv_" // Mantenha se quiser
 
+    // ADICIONE ESTA LINHA AQUI!
+    namespace 'me.himanshusoni.chatmessageview' // <-- ADICIONE ESTA LINHA!
+
     defaultConfig {
         minSdkVersion 15 // Pode manter 15 ou aumentar para 21 ou 23 se quiser
         targetSdkVersion 34 // <-- ATUALIZE AQUI!
