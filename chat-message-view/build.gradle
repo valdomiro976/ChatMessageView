@@ -72,25 +72,42 @@ dependencies {
 
 // chat-message-view/build.gradle (NO FINAL DO ARQUIVO)
 afterEvaluate {
+    // Obtenha o componente Android Library. Para AGP 7.x+, ele é chamado 'release' por padrão.
+    def androidReleaseComponent = components.findByName('release')
+
+    // Verifique se o componente foi encontrado
+    if (androidReleaseComponent == null) {
+        // Se 'release' não for encontrado, tente 'debug' ou outro nome de variante,
+        // ou logue um aviso para depuração.
+        println "WARNING: Could not find 'release' component. Attempting to use 'java' component for publication if available."
+        androidReleaseComponent = components.findByName('java')
+    }
+
+    // Se nenhum componente adequado for encontrado, logue e evite a falha.
+    if (androidReleaseComponent == null) {
+        println "ERROR: Could not find any suitable component for publication. Please check your Android Gradle Plugin configuration."
+        return // Saia do bloco afterEvaluate para evitar o erro.
+    }
+
     publishing {
         publications {
             release(MavenPublication) {
-                // Mude esta linha para:
-               from components.java // <-- MUDANÇA AQUI!
+                // Use o componente encontrado
+                from androidReleaseComponent
 
                 groupId = 'com.github.valdomiro976'
                 artifactId = 'chat-message-view'
-                version = '3.0.5' // Mantenha a versão da tag que você vai criar (ex: v3.0.5)
+                version = '3.0.9' // Use a versão da tag que você vai criar (ex: v3.0.9)
 
-                // ADICIONE ESTAS DUAS LINHAS:
-                artifact sourcesJar // Adiciona o JAR de código-fonte
-                artifact javadocJar // Adiciona o JAR de Javadoc
+                // Garante que sources e javadoc sejam anexados
+                artifact sourcesJar
+                artifact javadocJar
             }
         }
     }
 }
 
-// ADICIONE ESTE NOVO BLOCO TAMBÉM (PARA CRIAR OS JARS DE FONTES E JAVADOC):
+// As tarefas sourcesJar, javadoc e javadocJar permanecem as mesmas
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
@@ -99,9 +116,9 @@ task sourcesJar(type: Jar) {
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.addStringOption('Xdoclint:none', '-quiet') // Suprime warnings de Javadoc
+    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
-    failOnError false // Não falha o build por erros de Javadoc
+    failOnError false
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
