@@ -76,7 +76,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 // Mude esta linha para:
-                from components.release // <-- Reverter para 'release' (ou 'java' se 'release' não funcionar)
+               from components.java // <-- MUDANÇA AQUI!
 
                 groupId = 'com.github.valdomiro976'
                 artifactId = 'chat-message-view'
