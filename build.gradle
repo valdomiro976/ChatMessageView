@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         // ESTA LINHA PRECISA SER ATUALIZADA!
-        classpath 'com.android.tools.build:gradle:8.0.2' // <-- ESTA É A MUDANÇA
+        classpath 'com.android.tools.build:gradle:8.3.0' // <-- MUDANÇA AQUI!
         // classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1' // REMOVA SE AINDA ESTIVER AQUI
     }
 }
