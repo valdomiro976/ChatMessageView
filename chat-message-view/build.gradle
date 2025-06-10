@@ -70,16 +70,45 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'       // Era 25.1.1, atualize se não usa AndroidX
 }
 
-// Este bloco deve ser adicionado no FINAL do arquivo
+// chat-message-view/build.gradle (NO FINAL DO ARQUIVO)
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.android // <-- CORREÇÃO AQUI!
+                // Mude esta linha para:
+                from components.release // <-- Reverter para 'release' (ou 'java' se 'release' não funcionar)
+
                 groupId = 'com.github.valdomiro976'
                 artifactId = 'chat-message-view'
-                version = '3.0.4' // Use a versão da tag que você vai criar AGORA
+                version = '3.0.4' // Mantenha a versão da tag que você vai criar (ex: v3.0.5)
+
+                // ADICIONE ESTAS DUAS LINHAS:
+                artifact sourcesJar // Adiciona o JAR de código-fonte
+                artifact javadocJar // Adiciona o JAR de Javadoc
             }
         }
     }
+}
+
+// ADICIONE ESTE NOVO BLOCO TAMBÉM (PARA CRIAR OS JARS DE FONTES E JAVADOC):
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.addStringOption('Xdoclint:none', '-quiet') // Suprime warnings de Javadoc
+    options.addStringOption('encoding', 'UTF-8')
+    failOnError false // Não falha o build por erros de Javadoc
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
 }
