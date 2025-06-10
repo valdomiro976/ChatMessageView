@@ -1,110 +1,58 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish' // Essencial para publicação
+apply plugin: 'maven-publish' // Essencial para publicação com o AGP moderno
 
-// REMOVA OU COMENTE TODO ESSE BLOCO 'ext'
-/*
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'chat-message-view'
-
-    publishedGroupId = 'me.himanshusoni.chatmessageview'
-    libraryName = 'chat-message-view'
-    artifactId = 'chat-message-view'
-
-    libraryDescription = 'Android library to create chat message view easily'
-
-    siteUrl = 'https://github.com/himanshu-soni/ChatMessageView'
-    gitUrl = 'https://github.com/himanshu-soni/ChatMessageView.git'
-
-    libraryVersion = '1.0.7'
-
-    developerId = 'himanshu-soni'
-    developerName = 'Himanshu Soni'
-    developerEmail = 'himanshusoni.me@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-*/
-
+// --- Configurações Android ---
 android {
-    // Atualize para uma API moderna.
-    compileSdkVersion 34 
-    // buildToolsVersion "25.0.0" // Remova ou comente esta linha
-    // resourcePrefix "cmv_" // Mantenha se quiser
+    // API de compilação para Android 14
+    compileSdkVersion 34
+    // buildToolsVersion "25.0.0" // Esta linha é antiga, pode ser removida/comentada
 
-    // Adicione esta linha:
+    // Namespace do seu módulo (obrigatório para AGP 7.0+ e 8.0+)
     namespace 'me.himanshusoni.chatmessageview'
 
     defaultConfig {
-        minSdkVersion 15 // Pode manter 15 ou aumentar para 21 ou 23 se quiser
-        targetSdkVersion 34 // Atualize aqui!
+        minSdkVersion 15 // Versão mínima suportada
+        targetSdkVersion 34 // API alvo, alinhada com compileSdkVersion
         versionCode 7
-        versionName "1.0.7"
+        versionName "1.0.7" // Nome da versão da sua biblioteca
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    // Se houver um bloco 'lintOptions', você pode querer desabilitar o abortOnError para
-    // evitar falhas de build devido a warnings em código antigo.
+
+    // Desabilita abortar o build em caso de warnings do Lint
     lintOptions {
-        abortOnError false // Adicionado para evitar falhas de build por warnings
+        abortOnError false
     }
-}
 
-// REMOVA OU COMENTE ESTAS DUAS LINHAS!
-// apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/install.gradle'
-// apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/bintray.gradle'
-
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    // Mude de 'compile' para 'implementation'
-    // Se você não for usar AndroidX, certifique-se de que a versão da Support Library é 28.0.0
-    implementation 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
-}
-
-// NOVO BLOCO DE PUBLICAÇÃO (Substitui o 'afterEvaluate' e anexa o AAR diretamente)
-publishing {
-    publications {
-        // Nome da publicação (pode ser 'maven', 'release', etc.)
-        release(MavenPublication) {
-            groupId = 'com.github.valdomiro976' // Seu nome de usuário do GitHub
-            artifactId = 'chat-message-view'   // Nome do seu módulo da biblioteca
-            version = '3.0.11' // Use a versão da tag que você vai criar AGORA (ex: v3.0.9)
-
-            // Anexa diretamente o arquivo AAR gerado
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar") {
-                builtBy tasks.bundleReleaseAar // Garante que o AAR seja construído antes
-            }
+    // --- Configuração de Publicação Android (Forma moderna do AGP) ---
+    publishing {
+        // Publica a variante 'release' da sua biblioteca
+        singleVariant('release') {
+            // Inclui o código-fonte (sources JAR)
+            withSourcesJar()
+            // Inclui a documentação Javadoc (javadoc JAR)
+            withJavadocJar()
         }
     }
 }
 
-// REMOVA TODAS ESTAS TAREFAS DE JAVADOC E SOURCES JAR (ELAS ESTAVAM CAUSANDO ERROS), E O BLOCO ARTIFACTS QUE AS REFERENCIA
-// task sourcesJar(type: Jar) {
-//     archiveClassifier.set('sources')
-//     from android.sourceSets.main.java.srcDirs
-// }
+// --- Dependências do Módulo ---
+dependencies {
+    // Inclui todos os arquivos .jar da pasta 'libs'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-// task javadoc(type: Javadoc) {
-//     source = android.sourceSets.main.java.srcDirs
-//     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//     options.addStringOption('Xdoclint:none', '-quiet')
-//     options.addStringOption('encoding', 'UTF-8')
-//     failOnError false
-// }
+    // Dependências da Support Library (última versão antes do AndroidX)
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+}
 
-// task javadocJar(type: Jar, dependsOn: javadoc) {
-//     archiveClassifier.set('javadoc')
-//     from javadoc.destinationDir
-// }
-
-// artifacts {
-//     archives sourcesJar, javadocJar
-// }
+// --- Comentários Importantes Removidos/Ignorados ---
+// O bloco 'ext' original, as linhas 'apply from' e as tarefas 'sourcesJar',
+// 'javadoc' e 'javadocJar' personalizadas foram removidas/ignoradas
+// pois o plugin 'maven-publish' em conjunto com o bloco 'android.publishing'
+// as substitui de forma mais eficiente e compatível.
