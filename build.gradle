@@ -1,21 +1,26 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
+// build.gradle (ROOT do seu fork ChatMessageView)
 buildscript {
     repositories {
-        jcenter()
+        // DEVE CONTER:
+        google()
+        mavenCentral()
+        // Remova ou comente 'jcenter()' se estiver aqui.
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        // Atualize para uma versão moderna do Android Gradle Plugin.
+        // Comece com 7.0.4. Se der problema, pode tentar 8.0.0 ou 4.1.3.
+        classpath 'com.android.tools.build:gradle:7.0.4' // <-- ATUALIZE ESTA LINHA!
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        // REMOVA esta linha se ela existir!
+        // classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
     }
 }
 
+// Certifique-se de que o bloco allprojects também tenha google() e mavenCentral()
 allprojects {
     repositories {
-        jcenter()
+        google()
+        mavenCentral()
+        // Remova ou comente 'jcenter()' se estiver aqui.
     }
 }
