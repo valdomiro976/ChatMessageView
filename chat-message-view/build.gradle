@@ -57,19 +57,11 @@ android {
 // apply from: 'https://raw.githubusercontent.com/himanshu-soni/QuantityView/master/bintray.gradle'
 
 dependencies {
+    // Mude de 'compile fileTree' para 'implementation fileTree'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // Estas dependências da Support Library são MUITO ANTIGAS.
-    // Se seu projeto principal usa AndroidX, você PRECISA migrar esta biblioteca para AndroidX.
-    // Se seu projeto principal NÃO usa AndroidX, você pode tentar atualizar para a última Support Library
-    // ANTES do AndroidX (versão 28.0.0).
 
-    // Opção 1: Migrar a biblioteca para AndroidX (RECOMENDADO para projetos novos)
-    // Você precisaria fazer mais mudanças no código-fonte Java/Kotlin da biblioteca.
-    // implementation 'androidx.annotation:annotation:1.X.X'
-    // implementation 'androidx.legacy:legacy-support-v4:1.X.X'
-
-    // Opção 2: Usar a última Support Library antes do AndroidX (se seu projeto principal não usa AndroidX)
-    implementation 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
     // Mude de 'compile' para 'implementation'
+    // Se você não for usar AndroidX, certifique-se de que a versão da Support Library é 28.0.0
+    implementation 'com.android.support:support-annotations:28.0.0' // Era 25.1.1, atualize se não usa AndroidX
+    implementation 'com.android.support:support-v4:28.0.0'       // Era 25.1.1, atualize se não usa AndroidX
 }
